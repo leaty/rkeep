@@ -12,7 +12,7 @@ pub fn password() -> Result<String, Box<dyn std::error::Error>> {
 	Ok(password)
 }
 
-pub fn list(prompt: &String, entries: Vec<String>) -> Result<String, Box<dyn std::error::Error>> {
+pub fn list(prompt: &String, entries: &Vec<String>) -> Result<String, Box<dyn std::error::Error>> {
 	let mut bash = spawn_bash(None)?;
 	bash.send_line("unset HISTFILE")?;
 	bash.wait_for_prompt()?;
