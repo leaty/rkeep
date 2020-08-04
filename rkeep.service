@@ -1,0 +1,11 @@
+[Unit]
+Description=Persistent Rofi backend for KeePassXC in Rust
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+ExecStart=/usr/bin/rkeep-server
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,15 @@
+socket = "/tmp/rkeep.sock"
+
+[[session]]
+name = "mykeys" # Name of session, used in rkeep-client
+database = "/path/to/my.kdbx"
+alive = 1800 # Keep database unlocked for (seconds)
+timeout = 1000 # Max response timeout for keepassxc-cli (milliseconds). Adjust slightly if your kdbx takes longer to decrypt
+clipboard = 10 # Clear clipboard after (seconds)
+
+[[session]]
+name = "myotherkeys"
+database = "/path/to/my.other.kdbx"
+alive = 1800
+timeout = 30000
+clipboard = 10
