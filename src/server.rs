@@ -80,7 +80,7 @@ fn client(sessions: &mut HashMap<String, keepass::Session>, stream: UnixStream) 
 				// Execute keepass backend and rofi frontend
 				"exec" => {
 					let entries = session.list()?;
-					if let Ok(entry) = rofi::list(entries) {
+					if let Ok(entry) = rofi::list(&session.name, entries) {
 						session.clip(&entry)?;
 					}
 					break;

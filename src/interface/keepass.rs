@@ -11,6 +11,7 @@ impl CMD {
 
 pub struct Session {
 	pub connection: Option<PtyReplSession>,
+	pub name: String,
 	database: PathBuf,
 	alive: u32,
 	timeout: u64,
@@ -21,6 +22,7 @@ impl Session {
 	pub fn new(config: &config::Session) -> Session {
 		Session {
 			connection: None,
+			name: config.name.clone(),
 			database: config.database.clone(),
 			alive: config.alive,
 			timeout: config.timeout,
