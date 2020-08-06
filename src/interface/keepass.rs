@@ -58,7 +58,7 @@ impl Session {
 	}
 
 	pub fn clip(&mut self, entry: &String) -> Result<(), Box<dyn std::error::Error>> {
-		self.connection.as_mut().unwrap().send_line(format!("{} {}", &CMD::CLIP, &entry).as_str())?;
+		self.connection.as_mut().unwrap().send_line(format!("{} {}", &CMD::CLIP, &entry.replace(' ', "\\ ")).as_str())?;
 		self.connection.as_mut().unwrap().read_line()?;
 		self.connection.as_mut().unwrap().exp_regex(".kdbx>")?;
 		Ok(())
