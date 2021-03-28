@@ -1,30 +1,40 @@
-mod interface;
 mod config;
+mod interface;
+use clap::clap_app;
+use clap::crate_authors;
+use config::Config;
 use interface::keepass;
 use interface::rofi;
-use clap::clap_app;
-use git_version::git_version;
 use std::collections::HashMap;
-use std::os::unix::net::{UnixStream, UnixListener};
-use std::io::{BufRead, BufReader};
-use config::Config;
 use std::fs;
+use std::io::{BufRead, BufReader};
+use std::os::unix::net::{UnixListener, UnixStream};
+
+#[cfg(debug_assertions)]
+use git_version::git_version;
+#[cfg(debug_assertions)]
+pub const VERSION: &'static str = git_version!();
+
+#[cfg(not(debug_assertions))]
+use clap::crate_version;
+#[cfg(not(debug_assertions))]
+pub const VERSION: &'static str = crate_version!();
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
 	// Default config path
 	let xdgd = xdg::BaseDirectories::with_prefix("rkeep").unwrap();
 	let xdgc = xdgd.place_config_file("config.toml").unwrap();
 	let default = xdgc.to_str().unwrap();
-	
+
 	// Shell args
-	let version = git_version!();
-	let args = clap_app!(rkeep_server => 
-		(version: version)
-		(author: "leaty <dev@leaty.net>")
-		(about: "Persistent Rofi backend for KeePassXC using Rust")
+	let args = clap_app!(rkeep_server =>
+		(version: VERSION)
+		(author: crate_authors!())
+		(about: "Persistent Rofi backend for KeePass")
 		(@arg c: -c --config <FILE> +takes_value default_value(default) "Configuration file")
-	).get_matches();
-	
+	)
+	.get_matches();
+
 	// Load config
 	let config_file = args.value_of("c").unwrap_or(&default);
 	let config_str = fs::read_to_string(&config_file)?;
@@ -43,17 +53,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 		match stream {
 			Ok(stream) => {
 				client(&mut sessions, stream)?;
-			},
+			}
 			Err(_) => {
 				continue;
 			}
 		}
 	}
-	
+
 	Ok(())
 }
 
-fn client(sessions: &mut HashMap<String, keepass::Session>, stream: UnixStream) -> Result<(), Box<dyn std::error::Error>> {
+fn client(
+	sessions: &mut HashMap<String, keepass::Session>,
+	stream: UnixStream,
+) -> Result<(), Box<dyn std::error::Error>> {
 	let stream = BufReader::new(stream);
 	for line in stream.lines() {
 		let command = line.unwrap();
@@ -70,12 +83,11 @@ fn client(sessions: &mut HashMap<String, keepass::Session>, stream: UnixStream) 
 					if let Err(_) = session.open(&password) {
 						break;
 					}
-				}
-				else {
+				} else {
 					break;
 				}
 			}
-				
+
 			match c {
 				// Execute keepass backend and rofi frontend
 				"exec" => {
@@ -84,7 +96,7 @@ fn client(sessions: &mut HashMap<String, keepass::Session>, stream: UnixStream) 
 						session.clip(&entry)?;
 					}
 					break;
-				},
+				}
 				_ => break,
 			}
 		}
