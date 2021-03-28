@@ -1,0 +1,11 @@
+[Unit]
+Description=Persistent Rofi backend for KeePass
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+ExecStart=%h/.cargo/bin/rkeepd
+
+[Install]
+WantedBy=default.target

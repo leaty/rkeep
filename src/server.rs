@@ -9,6 +9,9 @@ use std::collections::HashMap;
 use std::fs;
 use std::io::{BufRead, BufReader};
 use std::os::unix::net::{UnixListener, UnixStream};
+use std::sync::{Arc, Mutex};
+use std::thread;
+use std::time::Duration;
 
 #[cfg(debug_assertions)]
 use git_version::git_version;
@@ -41,10 +44,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 	let config: Config = toml::from_str(&config_str).unwrap();
 
 	// Set up sessions
-	let mut sessions = HashMap::<String, keepass::Session>::new();
+	let sessions = Arc::new(Mutex::new(HashMap::<String, keepass::Session>::new()));
 	for session in &config.session {
-		sessions.insert(session.name.clone(), keepass::Session::new(&session));
+		sessions
+			.lock()
+			.unwrap()
+			.insert(session.name.clone(), keepass::Session::new(&session));
 	}
+
+	// Set up cleaning thread
+	cleaning(Arc::clone(&sessions));
 
 	// Start listening for clients
 	let _ = fs::remove_file(&config.socket);
@@ -52,7 +61,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 	for stream in listener.incoming() {
 		match stream {
 			Ok(stream) => {
-				client(&mut sessions, stream)?;
+				if let Err(e) = client(&mut sessions.lock().unwrap(), stream) {
+					println!("{}", e.to_string());
+				}
 			}
 			Err(_) => {
 				continue;
@@ -61,6 +72,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 	}
 
 	Ok(())
+}
+
+fn cleaning(sessions: Arc<Mutex<HashMap<String, keepass::Session>>>) {
+	thread::spawn(move || loop {
+		for (_, session) in sessions.lock().unwrap().iter_mut() {
+			if let Err(e) = session.clean() {
+				println!("{}", e.to_string());
+			}
+		}
+
+		thread::sleep(Duration::new(1, 0));
+	});
 }
 
 fn client(
@@ -77,24 +100,17 @@ fn client(
 		if sessions.contains_key(s) {
 			let session = &mut sessions.get_mut(s).unwrap();
 
-			// Connect if not yet open
-			if !session.connection.is_some() {
-				if let Ok(password) = rofi::password() {
-					if let Err(_) = session.open(&password) {
-						break;
-					}
-				} else {
-					break;
-				}
+			// Open if not yet open
+			if !session.database.is_some() {
+				session.open(&rofi::password()?)?;
 			}
 
 			match c {
 				// Execute keepass backend and rofi frontend
 				"exec" => {
-					let entries = session.list()?;
-					if let Ok(entry) = rofi::list(&session.name, &entries) {
-						session.clip(&entry)?;
-					}
+					let list = session.list()?;
+					let entry = rofi::list(&session.name, &list)?;
+					session.clip(&entry)?;
 					break;
 				}
 				_ => break,
