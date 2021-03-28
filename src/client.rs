@@ -23,7 +23,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 	let default = xdgc.to_str().unwrap();
 
 	// Shell args
-	let args = clap_app!(rkeep_client =>
+	let args = clap_app!(rkeep =>
 		(version: VERSION)
 		(author: crate_authors!())
 		(about: "Persistent Rofi backend for KeePass")
