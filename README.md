@@ -1,20 +1,16 @@
 # rkeep
-Persistent Rofi backend for KeePassXC in Rust, using `keepassxc-cli`.
+Persistent Rofi backend for KeePass in Rust.
 
 ## Todo
-* Implement non-blocking clipboard clear (removed for now since `clip timeout` is blocking)
+* Docs
 
 ## Requirements
 ```
 rofi
-keepassxc-cli
-timeout
 ```
 
 ## Configuration
-The configuration may contain multiple sessions, in case you have multiple keepass databases. However, a client can only access one session at a time. Default location is `~/.config/rkeep/config.toml`, see `rkeep-server --help` and `rkeep-client --help`. Copy the [sample config](config.sample.toml) for reference when configuring.
-
-**Note:** If nothing happens after entering your password, try bumping up the response timeout until it works.
+The configuration may contain multiple sessions, in case you have multiple keepass databases. Default location is `~/.config/rkeep/config.toml`, see `rkeepd --help` and `rkeep --help`. Copy the [sample config](config.sample.toml) for reference when configuring.
 
 ### Example config
 
@@ -22,17 +18,15 @@ The configuration may contain multiple sessions, in case you have multiple keepa
 socket = "/tmp/rkeep.sock"
 
 [[session]]
-name = "mykeys" # Name of session, used in rkeep-client
+name = "mykeys" # Name of session
 database = "/path/to/my.kdbx"
 alive = 1800 # Keep database unlocked for (seconds)
-timeout = 1000 # Max response timeout for keepassxc-cli (milliseconds). Adjust slightly if your kdbx takes longer to decrypt
-clipboard = 10 # Clear clipboard after (seconds), 0 for no never
+clipboard = 10 # Clear clipboard after (seconds)
 
 [[session]]
 name = "myotherkeys"
 database = "/path/to/my.other.kdbx"
 alive = 1800
-timeout = 30000
 clipboard = 10
 ```
 
@@ -40,10 +34,10 @@ clipboard = 10
 Run install.sh or install manually.
 
 ### Server
-Run `rkeep-server` directly on startup, or as a user service. Note however that the service may need to be modified to start after your display manager, otherwise rofi may not show up. 
+Run `rkeepd` directly on startup, or as a user service. Note however that the service may need to be modified to start after your display manager, otherwise rofi may not show up. 
 
-Personally I have no valid `After=` target for the service because I don't use a display manager, so I just add `systemctl --user start rkeep` in `.xinitrc` and omit enabling the service.
+Personally I have no valid `After=` target for the service because I don't use a display manager, so I just add `systemctl --user start rkeepd` in `.xinitrc` and omit enabling the service.
 
 ### Client
-Set up a keybind or a shortcut to run `rkeep-client -s mykeys`.
+Set up a keybind or a shortcut to run e.g. `rkeep -s mykeys`, or run it manually.
 

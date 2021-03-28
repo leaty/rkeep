@@ -1,22 +1,22 @@
 [package]
 name = "rkeep"
-version = "0.0.1"
+version = "0.1.0"
 authors = ["leaty <dev@leaty.net>"]
 edition = "2018"
 
 [[bin]]
-name = "rkeep-server"
+name = "rkeepd"
 path = "src/server.rs"
 
 [[bin]]
-name = "rkeep-client"
+name = "rkeep"
 path = "src/client.rs"
 
 [dependencies]
-clap = "2.33.1"
+clap = "2.33.3"
 git-version = "0.3.4"
-rexpect = "0.4.0"
 xdg = "2.2.0"
-toml = "0.5.6"
-serde = { version = "1.0.114", features = ["derive"]}
-
+toml = "0.5.8"
+serde = { version = "1.0.125", features = ["derive"] }
+keepass = "0.4.7"
+clipboard = "0.5.0"
