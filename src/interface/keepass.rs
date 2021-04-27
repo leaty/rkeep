@@ -47,7 +47,6 @@ impl Session {
 		let mut list = vec![];
 		let root = &self.database.as_ref().ok_or("Database is not open.")?.root;
 		build_list(&mut list, root, "".into());
-		list.sort();
 		Ok(list)
 	}
 
