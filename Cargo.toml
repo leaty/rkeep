@@ -3,6 +3,9 @@ name = "rkeep"
 version = "0.2.0"
 authors = ["leaty <dev@leaty.net>"]
 edition = "2018"
+license = "MIT"
+description = "Clip keepass passwords using rofi"
+repository = "https://github.com/leaty/rkeep"
 
 [[bin]]
 name = "rkeepd"
