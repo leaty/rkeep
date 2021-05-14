@@ -64,7 +64,7 @@ impl Session {
 
 	pub fn clip(&mut self, entry: &String) -> Result<(), Box<dyn std::error::Error>> {
 		// Get entry
-		if let Some(Node::Entry(e)) = &self
+		if let Some(Node::Entry(e)) = self
 			.database
 			.as_ref()
 			.ok_or("Database is not open.")?
