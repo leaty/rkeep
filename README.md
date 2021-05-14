@@ -26,6 +26,7 @@ clipboard = 10 # Clear clipboard after (seconds)
 [[session]]
 name = "myotherkeys"
 database = "/path/to/my.other.kdbx"
+keyfile = "/path/to/keyfile"
 alive = 1800
 clipboard = 10
 ```
