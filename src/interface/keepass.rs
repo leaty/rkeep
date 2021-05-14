@@ -86,6 +86,9 @@ impl Session {
 			// Store last clipped and set timer
 			self.clipped = Some(clipped);
 			self.clipboard_since = Some(Instant::now());
+
+			// Reset alive timeout
+			self.alive_since = Some(Instant::now());
 		} else {
 			return Err(format!("Unable to fetch entry '{}'.", entry).into());
 		}
