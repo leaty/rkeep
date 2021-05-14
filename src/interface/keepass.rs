@@ -14,6 +14,7 @@ pub struct Session {
 	clipboard: u32,
 	alive_since: Option<Instant>,
 	clipboard_since: Option<Instant>,
+	clipped: Option<String>,
 }
 
 impl Session {
@@ -27,6 +28,7 @@ impl Session {
 			clipboard: config.clipboard,
 			alive_since: None,
 			clipboard_since: None,
+			clipped: None,
 		}
 	}
 
@@ -71,15 +73,18 @@ impl Session {
 			.root
 			.get(&entry.split("/").collect::<Vec<&str>>())
 		{
+			// Clip password
+			let clipped = e
+				.get_password()
+				.ok_or(format!("No password in entry '{}'.", entry).as_str())?
+				.to_string();
+
 			// Put password in clipboard
 			let mut clipboard = ClipboardContext::new()?;
-			clipboard.set_contents(
-				e.get_password()
-					.ok_or(format!("No password in entry '{}'.", entry).as_str())?
-					.into(),
-			)?;
+			clipboard.set_contents(clipped.clone())?;
 
-			// Set timer
+			// Store last clipped and set timer
+			self.clipped = Some(clipped);
 			self.clipboard_since = Some(Instant::now());
 		} else {
 			return Err(format!("Unable to fetch entry '{}'.", entry).into());
@@ -88,23 +93,36 @@ impl Session {
 		Ok(())
 	}
 
+	pub fn clip_reset(&mut self) {
+		self.clipboard_since = None;
+		self.clipped = None;
+	}
+
 	pub fn clean(&mut self) -> Result<(), Box<dyn std::error::Error>> {
-		// Drop database session
-		if let Some(a) = self.alive_since {
-			if a.elapsed().as_secs() > self.alive.into() {
+		// Drop database if timeout is met
+		if let Some(alive) = self.alive_since {
+			if alive.elapsed().as_secs() > self.alive.into() {
 				self.database = None;
 				self.alive_since = None;
 				println!("Dropped session '{}'.", self.name);
 			}
 		}
 
-		// Clear clipboard
-		if let Some(c) = self.clipboard_since {
-			if c.elapsed().as_secs() > self.clipboard.into() {
-				self.clipboard_since = None;
+		// Clear clipped if timeout is met
+		if let (Some(clipped), Some(since)) = (&self.clipped, &self.clipboard_since) {
+			if since.elapsed().as_secs() > self.clipboard.into() {
 				let mut clipboard = ClipboardContext::new()?;
-				clipboard.set_contents("".into())?;
-				println!("Cleared clipboard.");
+
+				// Clear clipboard if last clipped matches clipboard
+				if clipped == &clipboard.get_contents()? {
+					clipboard.set_contents("".into())?;
+					println!("Cleared clipboard.");
+				} else {
+					println!("Clipboard was modified, skipping clear.");
+				}
+
+				// Always clear clip
+				self.clip_reset();
 			}
 		}
 
