@@ -9,6 +9,7 @@ pub struct Session {
 	pub database: Option<Database>,
 	pub name: String,
 	path: PathBuf,
+	keyfile: Option<PathBuf>,
 	alive: u32,
 	clipboard: u32,
 	alive_since: Option<Instant>,
@@ -19,8 +20,9 @@ impl Session {
 	pub fn new(config: &config::Session) -> Session {
 		Session {
 			database: None,
-			path: config.database.clone(),
 			name: config.name.clone(),
+			path: config.database.clone(),
+			keyfile: config.keyfile.clone(),
 			alive: config.alive,
 			clipboard: config.clipboard,
 			alive_since: None,
@@ -29,10 +31,20 @@ impl Session {
 	}
 
 	pub fn open(&mut self, password: &String) -> Result<(), Box<dyn std::error::Error>> {
+		// Open keyfile if any
+		let mut key = match &self.keyfile {
+			Some(k) => Some(File::open(k)?),
+			_ => None,
+		};
+
 		self.database = Some(Database::open(
 			&mut File::open(&self.path)?,
 			Some(password),
-			None,
+			// keepass lib wants keyfile as an option with &mut
+			match &mut key {
+				Some(k) => Some(k),
+				_ => None,
+			},
 		)?);
 
 		println!("Opened session '{}'.", self.name);

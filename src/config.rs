@@ -11,6 +11,7 @@ pub struct Config {
 pub struct Session {
 	pub name: String,
 	pub database: PathBuf,
+	pub keyfile: Option<PathBuf>,
 	pub alive: u32,
 	pub clipboard: u32,
 }
