@@ -111,6 +111,15 @@ fn client(
 					let list = session.list()?;
 					let entry = rofi::list(&session.name, &list)?;
 					session.clip(&entry)?;
+
+					// Since the user just clipped a new password
+					// reset clipboard timeouts on other sessions
+					for (key, other) in sessions {
+						if key != s {
+							other.clip_reset();
+						}
+					}
+
 					break;
 				}
 				_ => break,
