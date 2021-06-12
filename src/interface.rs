@@ -1,2 +1,2 @@
-pub	mod keepass;
-pub	mod rofi;
+pub mod display;
+pub mod keepass;

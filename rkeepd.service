@@ -1,5 +1,5 @@
 [Unit]
-Description=Persistent Rofi backend for KeePass
+Description=Persistent KeePass backend with display hooks
 
 [Service]
 Type=simple

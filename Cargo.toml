@@ -4,8 +4,12 @@ version = "0.3.0"
 authors = ["leaty <dev@leaty.net>"]
 edition = "2018"
 license = "MIT"
-description = "Clip keepass passwords using rofi"
+description = "Persistent KeePass backend with display hooks"
 repository = "https://github.com/leaty/rkeep"
+
+[lib]
+name = "rkeep"
+path = "src/lib.rs"
 
 [[bin]]
 name = "rkeepd"

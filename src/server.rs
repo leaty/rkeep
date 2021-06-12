@@ -1,10 +1,7 @@
-mod config;
-mod interface;
 use clap::clap_app;
 use clap::crate_authors;
-use config::Config;
-use interface::keepass;
-use interface::rofi;
+use rkeep::interface::{display, keepass};
+use rkeep::Config;
 use std::collections::HashMap;
 use std::fs;
 use std::io::{BufRead, BufReader};
@@ -33,7 +30,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 	let args = clap_app!(rkeepd =>
 		(version: VERSION)
 		(author: crate_authors!())
-		(about: "Persistent Rofi backend for KeePass")
+		(about: "Persistent KeePass backend with display hooks")
 		(@arg c: -c --config <FILE> +takes_value default_value(default) "Configuration file")
 	)
 	.get_matches();
@@ -41,11 +38,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 	// Load config
 	let config_file = args.value_of("c").unwrap_or(&default);
 	let config_str = fs::read_to_string(&config_file)?;
-	let config: Config = toml::from_str(&config_str).unwrap();
+	let mut config: Config = toml::from_str(&config_str).unwrap();
 
 	// Set up sessions
 	let sessions = Arc::new(Mutex::new(HashMap::<String, keepass::Session>::new()));
-	for session in &config.session {
+	for session in &mut config.session {
+		session.parse();
 		sessions
 			.lock()
 			.unwrap()
@@ -102,14 +100,14 @@ fn client(
 
 			// Open if not yet open
 			if !session.database.is_some() {
-				session.open(&rofi::password()?)?;
+				session.open(&display::password(&session.command.pass)?)?;
 			}
 
 			match c {
-				// Execute keepass backend and rofi frontend
+				// Execute keepass backend and display frontend
 				"exec" => {
 					let list = session.list()?;
-					let entry = rofi::list(&session.name, &list)?;
+					let entry = display::list(&session.command.list, &list)?;
 					session.clip(&entry)?;
 
 					// Since the user just clipped a new password

@@ -1,7 +1,6 @@
-mod config;
 use clap::clap_app;
 use clap::crate_authors;
-use config::Config;
+use rkeep::Config;
 use std::fs;
 use std::io::Write;
 use std::os::unix::net::UnixStream;
@@ -26,7 +25,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 	let args = clap_app!(rkeep =>
 		(version: VERSION)
 		(author: crate_authors!())
-		(about: "Persistent Rofi backend for KeePass")
+		(about: "Simple client for rkeepd")
 		(@arg c: -c --config <FILE> +takes_value default_value(default) "Configuration file")
 		(@arg s: -s --session <NAME> +takes_value "Session name")
 	)

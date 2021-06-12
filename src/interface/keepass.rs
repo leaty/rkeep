@@ -15,6 +15,7 @@ pub struct Session {
 	alive_since: Option<Instant>,
 	clipboard_since: Option<Instant>,
 	clipped: Option<String>,
+	pub command: config::Command,
 }
 
 impl Session {
@@ -29,6 +30,7 @@ impl Session {
 			alive_since: None,
 			clipboard_since: None,
 			clipped: None,
+			command: config.command.clone(),
 		}
 	}
 
