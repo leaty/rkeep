@@ -1,7 +1,7 @@
 # rkeep
 Persistent KeePass backend with display hooks for *most* STDIN capable programs, written in Rust. Use dmenu, rofi or similar interfaces to quickly copy your passwords to clipboard.
 
-Editing KeepPass is definitely in scope of this project, but it's a todo. PR's are welcome.
+Editing KeePass is definitely in scope of this project, but it's a todo. PR's are welcome.
 
 ## Configuration
 The configuration may contain multiple sessions, in case you have multiple keepass databases. Default location is `~/.config/rkeep/config.toml`, see `rkeepd --help` and `rkeep --help`. Copy the [sample config](config.sample.toml) for reference when configuring.
