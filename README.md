@@ -18,8 +18,8 @@ alive = 1800 # Keep database unlocked for (seconds)
 clipboard = 10 # Clear clipboard after (seconds)
 
 [session.command]
-pass = ["rofi", "-dmenu", "-password", "-i", "-p", "Password", "-theme-str", 'entry { placeholder: ""; }']
-list = ["rofi", "-dmenu", "-columns", "1", "-no-auto-select", "-p", "{session.name}"]
+pass = ["rofi", "-dmenu", "-password", "-p", "Password", "-theme-str", 'entry { placeholder: ""; }']
+list = ["rofi", "-dmenu", "-columns", "1", "-no-auto-select", "-i", "-p", "{session.name}"]
 
 [[session]]
 name = "myotherkeys"
@@ -29,8 +29,8 @@ alive = 1800
 clipboard = 10
 
 [session.command]
-pass = ["rofi", "-dmenu", "-password", "-i", "-p", "Password", "-theme-str", 'entry { placeholder: ""; }']
-list = ["rofi", "-dmenu", "-columns", "1", "-no-auto-select", "-p", "{session.name}"]
+pass = ["rofi", "-dmenu", "-password", "-p", "Password", "-theme-str", 'entry { placeholder: ""; }']
+list = ["rofi", "-dmenu", "-columns", "1", "-no-auto-select", "-i", "-p", "{session.name}"]
 ```
 
 ## How to use
