@@ -25,5 +25,5 @@ git-version = "0.3.4"
 xdg = "2.2.0"
 toml = "0.5.8"
 serde = { version = "1.0.125", features = ["derive"] }
-keepass = "0.4.8"
+keepass = "0.4.9"
 clipboard = "0.5.0"

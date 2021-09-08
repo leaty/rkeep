@@ -1,6 +1,6 @@
 use crate::config;
 use clipboard::{ClipboardContext, ClipboardProvider};
-use keepass::{Database, Group, Node};
+use keepass::{Database, Group, Node, NodeRef};
 use std::fs::File;
 use std::path::PathBuf;
 use std::time::Instant;
@@ -68,7 +68,7 @@ impl Session {
 
 	pub fn clip(&mut self, entry: &String) -> Result<(), Box<dyn std::error::Error>> {
 		// Get entry
-		if let Some(Node::Entry(e)) = self
+		if let Some(NodeRef::Entry(e)) = self
 			.database
 			.as_ref()
 			.ok_or("Database is not open.")?
@@ -137,12 +137,10 @@ impl Session {
 
 fn build_list(list: &mut Vec<String>, root: &Group, parents: String) {
 	// Add entries
-	for (key, _) in &root.entries {
-		list.push(format!("{}{}", parents, key));
-	}
-
-	// Go through children groups (recursive)
-	for (_, group) in &root.child_groups {
-		build_list(list, &group, format!("{}{}/", parents, group.name));
+	for node in &root.children {
+		match node {
+			Node::Entry(e) => list.push(format!("{}{}", parents, e.get_title().unwrap_or(""))),
+			Node::Group(g) => build_list(list, &g, format!("{}{}/", parents, g.name)),
+		}
 	}
 }
