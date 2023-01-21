@@ -9,7 +9,7 @@ The configuration may contain multiple sessions, in case you have multiple keepa
 ### Example config
 
 ```toml
-socket = "/tmp/rkeep.sock"
+socket = "~/.rkeep.sock"
 
 [[session]]
 name = "mykeys" # Name of session
