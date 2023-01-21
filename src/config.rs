@@ -3,13 +3,13 @@ use shellexpand::full_with_context_no_errors;
 use std::env;
 use std::path::PathBuf;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize)]
 pub struct Config {
     pub socket: PathBuf,
     pub session: Vec<Session>,
 }
 
-#[derive(Deserialize, Clone, Debug)]
+#[derive(Deserialize, Clone)]
 pub struct Session {
     pub name: String,
     pub database: PathBuf,
@@ -19,7 +19,7 @@ pub struct Session {
     pub command: Command,
 }
 
-#[derive(Deserialize, Clone, Debug)]
+#[derive(Deserialize, Clone)]
 pub struct Command {
     pub pass: Vec<String>,
     pub list: Vec<String>,
