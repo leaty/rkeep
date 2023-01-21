@@ -37,7 +37,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Load config
     let config_file = args.value_of("c").unwrap_or(&default);
-    let config_str = fs::read_to_string(dbg!(&config_file))?;
+    let config_str = fs::read_to_string(&config_file)?;
     let mut config: Config = toml::from_str::<Config>(&config_str).unwrap().process();
 
     // Set up sessions

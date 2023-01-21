@@ -85,6 +85,6 @@ impl Config {
                 });
         }
 
-        dbg!(self)
+        self
     }
 }
