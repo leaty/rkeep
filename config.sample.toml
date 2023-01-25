@@ -1,4 +1,4 @@
-socket = "/tmp/rkeep.sock"
+socket = "~/.rkeep.sock"
 
 [[session]]
 name = "mykeys" # Name of session
